@@ -4,10 +4,15 @@ import logging
 import os
 from typing import Any
 
+from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP
 
 from app.config import Settings
 from app.health_server import start_health_server
+from app.PegaSettings import PegaSettings
+from app.Tokenhelper import PegaTokenHelper
+from app.pega_client import PegaCaseClient
+from app.tools.PegaCreateCase import register_pega_create_case_tool
 
 def _build_auth_kwargs(settings: Settings) -> dict[str, Any]:
     """Return FastMCP auth kwargs when inbound auth is enabled."""
@@ -62,10 +67,20 @@ def build_server(settings: Settings) -> FastMCP:
             "auth_enabled": settings.mcp_auth_enabled,
         }
 
+    # Initialize Pega components
+    pega_settings = PegaSettings.from_env()
+    token_helper = PegaTokenHelper(pega_settings)
+    pega_client = PegaCaseClient(pega_settings, token_helper)
+
+    # Register Pega tools
+    register_pega_create_case_tool(mcp, pega_client, pega_settings)
+
     return mcp
 
 
 def main() -> None:
+    # Load environment variables from .env file
+    load_dotenv()
     settings = Settings.from_env()
     logging.basicConfig(
         level=getattr(logging, settings.log_level, logging.INFO),
