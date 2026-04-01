@@ -1,0 +1,11 @@
+.env
+mcp_server/.env
+.venv/
+mcp_server/.venv/
+mcp_server/.venv311/
+__pycache__/
+*.pyc
+mcp_server/build/
+mcp_server/*.egg-info/
+.DS_Store
+test
