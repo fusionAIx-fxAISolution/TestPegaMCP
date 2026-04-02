@@ -63,7 +63,7 @@ class PegaSettings:
             token_refresh_skew_seconds=int(_env("TOKEN_REFRESH_SKEW_SECONDS", "60")),
             allowed_case_type_id=_env(
                 "ALLOWED_CASE_TYPE_ID",
-                "O0QR3T-SupportT-Work-SupportTicket",
+                "FAI-ProductMngmt-Work-ProductInfo"
             ),
             allowed_create_process_id=_env("ALLOWED_CREATE_PROCESS_ID", "pyStartCase"),
             default_origin_channel=_env("DEFAULT_ORIGIN_CHANNEL", "Mobile"),
