@@ -1,11 +1,18 @@
 from __future__ import annotations
- 
+
 from typing import Any
- 
+
 import httpx
- 
+
 from app.PegaSettings import PegaSettings
 from app.Tokenhelper import PegaTokenHelper
+
+
+class PegaClientError(RuntimeError):
+    """Exception raised for Pega API errors"""
+    pass
+
+
 class PegaCaseClient:
     def __init__(self, settings: PegaSettings, token_helper: PegaTokenHelper) -> None:
         self._settings = settings

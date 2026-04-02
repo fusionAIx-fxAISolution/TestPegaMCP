@@ -63,14 +63,9 @@ async def test_create_case():
     # Test case creation
     print("\n4. Testing case creation...")
     try:
+        # Pega API only requires caseTypeID
         payload = {
             "caseTypeID": settings.allowed_case_type_id,
-            "processID": settings.allowed_create_process_id,
-            "content": {
-                "Description": "Test case from MCP server",
-                "Priority": "High",
-                "Title": "Test Support Ticket"
-            }
         }
         
         print(f"  - Payload: {payload}")

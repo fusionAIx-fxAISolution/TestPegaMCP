@@ -81,28 +81,10 @@ def register_pega_create_case_tool(
 
     ) -> dict[str, Any]:
 
-        content = json.loads(json.dumps(settings.default_create_content))
- 
-        if description is not None:
-
-            content["Description"] = description
-
-        if priority is not None:
-
-            content["Priority"] = priority
-
-        if title is not None:
-
-            content["Title"] = title
- 
+        # Pega API only requires caseTypeID
+        # Additional fields like description, priority, title are ignored by the basic API
         payload = {
-
             "caseTypeID": settings.allowed_case_type_id,
-
-            "processID": settings.allowed_create_process_id,
-
-            "content": content,
-
         }
  
         payload_size = len(json.dumps(payload))
@@ -111,7 +93,7 @@ def register_pega_create_case_tool(
 
             raise ValueError(
 
-                f"default create payload too large ({payload_size} bytes), "
+                f"create payload too large ({payload_size} bytes), "
 
                 f"max is {settings.max_create_payload_bytes}"
 
