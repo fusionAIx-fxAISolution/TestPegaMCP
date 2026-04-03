@@ -73,20 +73,22 @@ def register_pega_create_case_tool(
  
     def _build_default_create_payload(
 
-        description: str | None = None,
+        policy_number: str | None = None,
 
-        priority: str | None = None,
-
-        title: str | None = None,
+        case_type_id: str | None = None,
 
     ) -> dict[str, Any]:
 
-        # Pega API only requires caseTypeID
-        # Additional fields like description, priority, title are ignored by the basic API
+        # Build payload according to provided Pega request template
+        payload_case_type = case_type_id or settings.allowed_case_type_id
+
         payload = {
-            "caseTypeID": settings.allowed_case_type_id,
+            "caseTypeID": payload_case_type,
+            "content": {
+                "PolicyNumber": policy_number or ""
+            },
         }
- 
+
         payload_size = len(json.dumps(payload))
 
         if payload_size > settings.max_create_payload_bytes:
