@@ -107,7 +107,7 @@ def register_pega_create_case_tool(
 
         description=(
 
-            "Create a Pega Support Ticket using server-side defaults. "
+            "Create a Pega Smart Claim Case usingserver-side defaults. "
 
             "Optionally override description, priority, and title. "
 
