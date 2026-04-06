@@ -73,17 +73,26 @@ def register_pega_create_case_tool(
  
     def _build_default_create_payload(
 
-        policy_number: str | None = None,
+        PolicyNumber: str | None = None,
 
         case_type_id: str | None = None,
 
     ) -> dict[str, Any]:
 
-        # Build payload - Pega API only requires caseTypeID
-        # The content field with PolicyNumber causes validation errors
+        # Build payload with case type and create process ID
         payload = {
             "caseTypeID": case_type_id or settings.allowed_case_type_id,
+            "processID": settings.allowed_create_process_id,
         }
+
+        # Start with default create content and add policy metadata if present
+        content = dict(settings.default_create_content or {})
+        if PolicyNumber:
+            content["PolicyNumber"] = PolicyNumber
+            content["pyLabel"] = f"Policy: {PolicyNumber}"
+
+        if content:
+            payload["content"] = content
 
         payload_size = len(json.dumps(payload))
 
@@ -96,18 +105,20 @@ def register_pega_create_case_tool(
                 f"max is {settings.max_create_payload_bytes}"
 
             )
- 
+
         return payload
- 
+
     @mcp.tool(
 
         name="pega_create_case",
 
         description=(
 
-            "Create a Pega Smart Claim Case using server-side defaults. "
+            "Create a Pega Smart Claim Case. "
 
-            "Optionally specify policy number and case type ID. "
+            "Specify policy number to store it in case properties. "
+
+            "Optionally specify case type ID. "
 
             "Returns created case info including the case ID."
 
@@ -117,22 +128,22 @@ def register_pega_create_case_tool(
 
     async def pega_create_case(
 
-        policy_number: str | None = None,
+        PolicyNumber: str | None = None,
 
         case_type_id: str | None = None,
 
     ) -> dict[str, Any]:
 
         await create_limiter.acquire()
- 
+
         payload = _build_default_create_payload(
 
-            policy_number=policy_number,
+            PolicyNumber=PolicyNumber,
 
             case_type_id=case_type_id,
 
         )
- 
+
         return await pega_client.create_case(
 
             payload=payload,

@@ -63,9 +63,11 @@ async def test_create_case():
     # Test case creation
     print("\n4. Testing case creation...")
     try:
-        # Pega API only requires caseTypeID - content field causes validation errors
+        # Pega API create call should include processID and default content
         payload = {
             "caseTypeID": settings.allowed_case_type_id,
+            "processID": settings.allowed_create_process_id,
+            "content": settings.default_create_content,
         }
         
         print(f"  - Payload: {payload}")

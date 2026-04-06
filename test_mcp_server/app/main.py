@@ -13,6 +13,7 @@ from app.PegaSettings import PegaSettings
 from app.Tokenhelper import PegaTokenHelper
 from app.pega_client import PegaCaseClient
 from app.tools.PegaCreateCase import register_pega_create_case_tool
+from app.tools.PegaAttachment import register_pega_attachment_tool
 
 def _build_auth_kwargs(settings: Settings) -> dict[str, Any]:
     """Return FastMCP auth kwargs when inbound auth is enabled."""
@@ -74,6 +75,11 @@ def build_server(settings: Settings) -> FastMCP:
 
     # Register Pega tools
     register_pega_create_case_tool(mcp, pega_client, pega_settings)
+    register_pega_attachment_tool(mcp, pega_client, pega_settings)
+
+    # Add cleanup on exit
+    import atexit
+    atexit.register(pega_client.cleanup)
 
     return mcp
 
