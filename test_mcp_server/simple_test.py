@@ -50,11 +50,10 @@ async def test_case_creation():
         print(f'❌ Failed to initialize client: {e}')
         return
 
-    # Test basic case creation with processID and default content
+    # Test basic case creation with processID (no content to avoid validation errors)
     payload = {
         'caseTypeID': settings.allowed_case_type_id,
         'processID': settings.allowed_create_process_id,
-        'content': settings.default_create_content,
     }
     print(f'🔄 Creating case with payload: {payload}')
 
@@ -63,12 +62,38 @@ async def test_case_creation():
         print('✅ Case created successfully!')
         print(f'   Case ID: {result.get("ID")}')
         print(f'   Full response: {result}')
-        return result.get('ID')
+        case_id_1 = result.get('ID')
     except Exception as e:
         print(f'❌ Error creating case: {e}')
         import traceback
         traceback.print_exc()
-        return None
+        case_id_1 = None
+
+    # Now test with PolicyNumber
+    print('\n🔄 Testing with PolicyNumber...')
+    payload_with_policy = {
+        'caseTypeID': settings.allowed_case_type_id,
+        'processID': settings.allowed_create_process_id,
+        'pyLabel': 'Policy: POL123456710',
+        'content': {
+            'PolicyNumber': 'POL123456710'
+        }
+    }
+    print(f'🔄 Creating case with PolicyNumber payload: {payload_with_policy}')
+
+    try:
+        result = await client.create_case(payload_with_policy, 'none', None, settings.default_origin_channel)
+        print('✅ Case with PolicyNumber created successfully!')
+        print(f'   Case ID: {result.get("ID")}')
+        print(f'   Full response: {result}')
+        case_id_2 = result.get('ID')
+    except Exception as e:
+        print(f'❌ Error creating case with PolicyNumber: {e}')
+        import traceback
+        traceback.print_exc()
+        case_id_2 = None
+
+    return case_id_1 or case_id_2
 
 if __name__ == "__main__":
     case_id = asyncio.run(test_case_creation())

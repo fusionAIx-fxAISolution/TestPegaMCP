@@ -85,14 +85,12 @@ def register_pega_create_case_tool(
             "processID": settings.allowed_create_process_id,
         }
 
-        # Start with default create content and add policy metadata if present
-        content = dict(settings.default_create_content or {})
+        # Only add content if PolicyNumber is provided (to avoid validation errors)
         if PolicyNumber:
-            content["PolicyNumber"] = PolicyNumber
-            content["pyLabel"] = f"Policy: {PolicyNumber}"
-
-        if content:
-            payload["content"] = content
+            payload["content"] = {
+                "PolicyNumber": PolicyNumber
+            }
+            payload["pyLabel"] = f"Policy: {PolicyNumber}"
 
         payload_size = len(json.dumps(payload))
 
