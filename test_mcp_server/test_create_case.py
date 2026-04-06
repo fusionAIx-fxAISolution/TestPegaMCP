@@ -63,7 +63,7 @@ async def test_create_case():
     # Test case creation
     print("\n4. Testing case creation...")
     try:
-        # Pega API only requires caseTypeID
+        # Pega API only requires caseTypeID - content field causes validation errors
         payload = {
             "caseTypeID": settings.allowed_case_type_id,
         }
@@ -82,6 +82,8 @@ async def test_create_case():
         
         if isinstance(result, dict) and "ID" in result:
             print(f"  - Case ID: {result['ID']}")
+        elif isinstance(result, dict) and "data" in result and "ID" in result["data"]:
+            print(f"  - Case ID: {result['data']['ID']}")
         
     except Exception as e:
         print(f"✗ Failed to create case: {e}")

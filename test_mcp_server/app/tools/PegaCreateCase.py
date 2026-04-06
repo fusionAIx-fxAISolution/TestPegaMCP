@@ -79,14 +79,10 @@ def register_pega_create_case_tool(
 
     ) -> dict[str, Any]:
 
-        # Build payload according to provided Pega request template
-        payload_case_type = case_type_id or settings.allowed_case_type_id
-
+        # Build payload - Pega API only requires caseTypeID
+        # The content field with PolicyNumber causes validation errors
         payload = {
-            "caseTypeID": payload_case_type,
-            "content": {
-                "PolicyNumber": policy_number or ""
-            },
+            "caseTypeID": case_type_id or settings.allowed_case_type_id,
         }
 
         payload_size = len(json.dumps(payload))
@@ -109,9 +105,9 @@ def register_pega_create_case_tool(
 
         description=(
 
-            "Create a Pega Smart Claim Case usingserver-side defaults. "
+            "Create a Pega Smart Claim Case using server-side defaults. "
 
-            "Optionally override description, priority, and title. "
+            "Optionally specify policy number and case type ID. "
 
             "Returns created case info including the case ID."
 
@@ -121,11 +117,9 @@ def register_pega_create_case_tool(
 
     async def pega_create_case(
 
-        description: str | None = None,
+        policy_number: str | None = None,
 
-        priority: str | None = None,
-
-        title: str | None = None,
+        case_type_id: str | None = None,
 
     ) -> dict[str, Any]:
 
@@ -133,11 +127,9 @@ def register_pega_create_case_tool(
  
         payload = _build_default_create_payload(
 
-            description=description,
+            policy_number=policy_number,
 
-            priority=priority,
-
-            title=title,
+            case_type_id=case_type_id,
 
         )
  
