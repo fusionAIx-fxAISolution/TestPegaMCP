@@ -132,18 +132,24 @@ class PegaCaseClient:
         self,
         case_id: str,
         file_name: str,
-        file_content: str,
+        file_content: str | None = None,
+        attachment_url: str | None = None,
         content_type: str | None = None,
     ) -> dict[str, Any]:
         content_type = content_type or "application/octet-stream"
 
-        # Handle base64 content by creating a temporary file and serving it
-        if file_content.startswith(('http://', 'https://')):
+        # Prefer explicit attachment URL when provided
+        if attachment_url:
+            final_attachment_url = attachment_url
+        # Handle direct URL passed in file_content
+        elif file_content and file_content.startswith(('http://', 'https://')):
             # If it's already a URL, use it directly
-            attachment_url = file_content
-        else:
+            final_attachment_url = file_content
+        elif file_content:
             # For base64 content, create a temporary file and get its URL
-            attachment_url = self._file_server.add_file(file_name, file_content)
+            final_attachment_url = self._file_server.add_file(file_name, file_content)
+        else:
+            raise ValueError("Either file_content or attachment_url must be provided")
 
         payload = {
             "attachments": [
@@ -151,8 +157,9 @@ class PegaCaseClient:
                     "type": "URL",
                     "name": file_name,
                     "pyLabel": file_name,
-                    "url": attachment_url,
-                    "category": "URL"
+                    "url": final_attachment_url,
+                    "category": "URL",
+                    "contentType": content_type,
                 }
             ]
         }
