@@ -75,6 +75,8 @@ def register_pega_create_case_tool(
 
         PolicyNumber: str | None = None,
 
+        EmailID: str | None = None,
+
         case_type_id: str | None = None,
 
     ) -> dict[str, Any]:
@@ -85,12 +87,19 @@ def register_pega_create_case_tool(
             "processID": settings.allowed_create_process_id,
         }
 
-        # Only add content if PolicyNumber is provided (to avoid validation errors)
+        # Only add provided fields to avoid validation errors on empty content.
+        content: dict[str, Any] = {}
         if PolicyNumber:
-            payload["content"] = {
-                "PolicyNumber": PolicyNumber
-            }
-            payload["pyLabel"] = f"Policy: {PolicyNumber}"
+            content["PolicyNumber"] = PolicyNumber
+        if EmailID:
+            content["EmailID"] = EmailID
+
+        if content:
+            payload["content"] = content
+            if PolicyNumber:
+                payload["pyLabel"] = f"Policy: {PolicyNumber}"
+            elif EmailID:
+                payload["pyLabel"] = f"Email: {EmailID}"
 
         payload_size = len(json.dumps(payload))
 
@@ -116,6 +125,8 @@ def register_pega_create_case_tool(
 
             "Specify policy number to store it in case properties. "
 
+            "Optionally specify email ID to store it in case properties. "
+
             "Optionally specify case type ID. "
 
             "Returns created case info including the case ID."
@@ -128,6 +139,8 @@ def register_pega_create_case_tool(
 
         PolicyNumber: str | None = None,
 
+        EmailID: str | None = None,
+
         case_type_id: str | None = None,
 
     ) -> dict[str, Any]:
@@ -137,6 +150,8 @@ def register_pega_create_case_tool(
         payload = _build_default_create_payload(
 
             PolicyNumber=PolicyNumber,
+
+            EmailID=EmailID,
 
             case_type_id=case_type_id,
 
