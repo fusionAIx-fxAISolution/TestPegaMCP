@@ -93,7 +93,9 @@ def register_pega_attachment_tool(
 
         file_name: str,
 
-        file_content: str,
+        file_content: str | None = None,
+
+        attachment_url: str | None = None,
 
         content_type: str | None = None,
 
@@ -102,6 +104,9 @@ def register_pega_attachment_tool(
         await attachment_limiter.acquire()
  
         content_type = content_type or "application/octet-stream"
+
+        if not file_content and not attachment_url:
+            raise ValueError("Provide either file_content (base64/URL) or attachment_url")
  
         return await pega_client.add_attachment(
 
@@ -110,6 +115,8 @@ def register_pega_attachment_tool(
             file_name=file_name,
 
             file_content=file_content,
+
+            attachment_url=attachment_url,
 
             content_type=content_type,
 
